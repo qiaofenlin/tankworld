@@ -4,3 +4,9 @@ RemoteSystemsTempFiles
 target
 /tank-world-server/tank-world-game-server/.classpath
 /tank-world-server/tank-world-game-server/.project
+.recommenders
+/tank-world/.project
+/tank-world/*.project
+/tank-world/tank-world-game-server/*.classpath
+/tank-world/tank-world-game-server/*.project
+/.metadata
