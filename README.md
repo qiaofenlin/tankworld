@@ -13,5 +13,9 @@
 3,mybatis
 4,springboot
 
+开发IDE:eclipse Neon.1a Release (4.6.1)
+使用maven管理项目，版本：3.3.9
+JDK  :1.8
+
 技术交流群：66728073     398808948
 技术分享网站：http://www.coc88.com
