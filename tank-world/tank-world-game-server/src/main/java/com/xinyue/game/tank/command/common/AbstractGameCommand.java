@@ -12,6 +12,7 @@ public abstract class AbstractGameCommand implements IGameCommand {
 	private long sequenceId;
 	private long receiveTime;
 	private long responseTime;
+	private int errorCode;
 
 	public AbstractGameCommand() {
 		GameCommand gameCommand = this.getClass().getAnnotation(GameCommand.class);
@@ -28,6 +29,16 @@ public abstract class AbstractGameCommand implements IGameCommand {
 		command.setSequenceId(sequenceId);
 		command.setUserId(userId);
 		return command;
+	}
+
+	@Override
+	public void setErrorCode(int errorCode) {
+		this.errorCode = errorCode;
+	}
+
+	@Override
+	public int getErrorCode() {
+		return this.errorCode;
 	}
 
 	@Override

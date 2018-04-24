@@ -40,5 +40,9 @@ public interface IGameCommand {
 	long getResponseTime();
 	
 	void setResponseTime(long responseTime);
+	
+	int getErrorCode();
+	void setErrorCode(int errorCode);
+	
 
 }
