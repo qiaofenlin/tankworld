@@ -7,20 +7,20 @@ import com.xinyue.game.tank.server.framework.GamePromise;
 
 import io.netty.util.concurrent.EventExecutor;
 
-public class GameChannelHandlerContext {
-	private GameChannelHandlerContext next;
-	private GameChannelHandlerContext pre;
+public abstract class GameChannelHandlerContext {
+	GameChannelHandlerContext next;
+	GameChannelHandlerContext pre;
 
-	private GameChannelHandler handler;
 
 	private GameChannelPipeline pipeline;
 
 	private EventExecutor executor;
 
-	public GameChannelHandlerContext(GameChannelPipeline pipeline, EventExecutor executor, GameChannelHandler handler) {
+	public GameChannelHandlerContext(GameChannelPipeline pipeline, EventExecutor executor) {
 		this.executor = executor;
-		this.handler = handler;
+		this.pipeline = pipeline;
 	}
+	public abstract GameChannelHandler getHandler();
 
 	public GameChannel channel() {
 		return pipeline.channel();
@@ -39,7 +39,7 @@ public class GameChannelHandlerContext {
 	}
 
 	public GameChannelHandlerContext fireReadCommand(IGameCommand command) {
-		invokeChannelRead(command);
+		invokeChannelRead(next,command);
 		return this;
 	}
 
@@ -58,7 +58,7 @@ public class GameChannelHandlerContext {
 	}
 
 	private void invokeChannelRead(IGameCommand msg) {
-		handler.readCommand(msg, this);
+		getHandler().readCommand(msg, this);
 	}
 
 	private GamePromise<Object> newPromise() {
@@ -75,6 +75,7 @@ public class GameChannelHandlerContext {
 	}
 
 	private void write(IGameCommand msg, GamePromise<Object> promise) {
+		GameChannelHandlerContext next = pre;
 		EventExecutor executor = next.executor();
 		if (executor.inEventLoop()) {
 			next.invokeChannelWrite(msg, promise);
@@ -86,7 +87,7 @@ public class GameChannelHandlerContext {
 	}
 
 	private void invokeChannelWrite(IGameCommand msg, GamePromise<Object> promise) {
-		handler.writeCommand(msg, this, promise);
+		getHandler().writeCommand(msg, this, promise);
 	}
 
 }

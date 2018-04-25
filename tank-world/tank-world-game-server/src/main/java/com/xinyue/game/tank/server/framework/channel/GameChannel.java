@@ -4,15 +4,13 @@ import com.xinyue.game.tank.command.common.IGameCommand;
 import com.xinyue.game.tank.server.framework.GameFuture;
 import com.xinyue.game.tank.server.framework.GamePromise;
 
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.concurrent.EventExecutor;
 
 public interface GameChannel {
 	EventExecutor executor();
 
-	ChannelHandlerContext getCtx();
 
-	void setCtx(ChannelHandlerContext ctx);
+	void init(long userId);
 
 	void readCommand(IGameCommand command);
 
@@ -21,6 +19,8 @@ public interface GameChannel {
 	GameFuture<Object> writeCommand(IGameCommand command, GamePromise<Object> promise);
 
 	void writeEvent(Object event);
+	
+	ICommandSender getCommandSender();
 
 	GameFuture<Object> writeEvent(Object event, GamePromise<Object> obj);
 }
