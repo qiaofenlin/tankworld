@@ -12,6 +12,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import com.xinyue.game.tank.command.common.IGameCommand;
+import com.xinyue.game.tank.server.framework.channel.ChannelEvent;
 
 @Service
 public class RequestDispatcher {
@@ -65,7 +66,7 @@ public class RequestDispatcher {
 		}
 	}
 
-	public void Invoker(IGameEvent gameEvent, GameContext ctx) {
+	public void Invoker(ChannelEvent gameEvent, GameContext ctx) {
 		String key = gameEvent.getClass().getName();
 		MethodInvokerInfo methodInvokerInfo = this.eventMap.get(key);
 		if (methodInvokerInfo != null) {
