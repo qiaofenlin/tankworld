@@ -2,37 +2,28 @@ package com.xinyue.game.tank.server.framework.channel;
 
 import com.xinyue.game.tank.command.common.IGameCommand;
 
-import io.netty.channel.ChannelPromise;
-import io.netty.util.concurrent.EventExecutor;
+import io.netty.channel.EventLoop;
 
-public interface IGameChannel {
+public interface IGameChannel extends IGameChannelOutboundInvoker {
 
-	EventExecutor executor();
+	Object getChannelId();
 
-	void readCommand(IGameCommand command);
+	EventLoop eventLoop();
 
-	void readEvent(IGameEvent gameEvent);
+	IGameChannelPipeline pipeline();
 
-	void writeCommand(IGameCommand command);
-	Unsafe unsafe();
+	@Override
+	IGameChannel read();
 
-	interface Unsafe {
-		/**
-		 * Close the {@link Channel} of the {@link ChannelPromise} and notify
-		 * the {@link ChannelPromise} once the operation was complete.
-		 */
-		void close(ChannelPromise promise);
+	boolean isActive();
 
-		/**
-		 * Schedules a write operation.
-		 */
-		void write(IGameCommand msg, ChannelPromise promise);
+	Unsafe getUnsafe();
 
-		/**
-		 * Flush out all write operations scheduled via
-		 * {@link #write(Object, ChannelPromise)}.
-		 */
-		void flush();
+	IGameChannelDispatcher getGameChannelDispatcher();
+
+	public interface Unsafe {
+		void close();
+		void writeCommand(IGameCommand gameCommand);
 	}
 
 }

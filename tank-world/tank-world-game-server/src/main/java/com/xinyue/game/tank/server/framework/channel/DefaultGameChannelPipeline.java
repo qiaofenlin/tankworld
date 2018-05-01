@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.xinyue.game.tank.command.common.IGameCommand;
-import com.xinyue.game.tank.server.framework.channel.IGameChannel.Unsafe;
 import com.xinyue.game.tank.server.framework.channel.adapter.GameChannelHandlerAdapter;
 
 import io.netty.channel.ChannelFuture;
@@ -100,30 +99,30 @@ public class DefaultGameChannelPipeline implements IGameChannelPipeline {
 
 	@Override
 	public IGameChannelHandler last() {
-		  AbstractGameChannelHandlerContext last = tail.prev;
-	        if (last == head) {
-	            return null;
-	        }
-	        return last.handler();
+		AbstractGameChannelHandlerContext last = tail.prev;
+		if (last == head) {
+			return null;
+		}
+		return last.handler();
 	}
 
 	@Override
 	public IGameChannelHandlerContext lastContext() {
-		 AbstractGameChannelHandlerContext last = tail.prev;
-	        if (last == head) {
-	            return null;
-	        }
-	        return last;
+		AbstractGameChannelHandlerContext last = tail.prev;
+		if (last == head) {
+			return null;
+		}
+		return last;
 	}
 
 	@Override
 	public IGameChannelHandler get(String name) {
-		  IGameChannelHandlerContext ctx = context(name);
-	        if (ctx == null) {
-	            return null;
-	        } else {
-	            return ctx.handler();
-	        }
+		IGameChannelHandlerContext ctx = context(name);
+		if (ctx == null) {
+			return null;
+		} else {
+			return ctx.handler();
+		}
 	}
 
 	@Override
@@ -133,18 +132,20 @@ public class DefaultGameChannelPipeline implements IGameChannelPipeline {
 
 	@Override
 	public IGameChannelPipeline fireChannelActive() {
-		 AbstractGameChannelHandlerContext.invokeChannelActive(head);
-	        return this;
+		AbstractGameChannelHandlerContext.invokeChannelActive(head);
+		return this;
 	}
+
 	@Override
 	public IGameChannelPipeline fireChannelInActive() {
 		AbstractGameChannelHandlerContext.invokeChannelInActive(head);
 		return this;
 	}
+
 	@Override
 	public IGameChannelPipeline fireExceptionCaught(Throwable cause) {
 		AbstractGameChannelHandlerContext.invokeExceptionCaught(head, cause);
-        return this;
+		return this;
 	}
 
 	@Override
@@ -243,11 +244,8 @@ public class DefaultGameChannelPipeline implements IGameChannelPipeline {
 	final class HeadContext extends AbstractGameChannelHandlerContext
 			implements IGameChannelOutboundHandler, IGameChannelInboundHandler {
 
-		private final Unsafe unsafe;
-
 		HeadContext(DefaultGameChannelPipeline pipeline) {
 			super(pipeline, null, HEAD_NAME, false, true);
-			unsafe = pipeline.channel().unsafe();
 			setAddComplete();
 		}
 
@@ -293,7 +291,7 @@ public class DefaultGameChannelPipeline implements IGameChannelPipeline {
 
 		@Override
 		public void close(IGameChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
-			unsafe.close(promise);
+
 		}
 
 		@Override
@@ -303,16 +301,8 @@ public class DefaultGameChannelPipeline implements IGameChannelPipeline {
 
 		@Override
 		public void write(IGameChannelHandlerContext ctx, IGameCommand msg, ChannelPromise promise) throws Exception {
-			unsafe.write(msg, promise);
-		}
-
-		@Override
-		public void flush(IGameChannelHandlerContext ctx) throws Exception {
-			unsafe.flush();
 		}
 	}
-
-	
 
 	@Override
 	public ChannelFuture close() {
@@ -333,29 +323,32 @@ public class DefaultGameChannelPipeline implements IGameChannelPipeline {
 	public ChannelFuture writeCommand(IGameCommand msg, ChannelPromise promise) {
 		return tail.writeCommand(msg, promise);
 	}
-	//TODO 这里会以后替换成自定义的promise
+
+	// TODO 这里会以后替换成自定义的promise
 	@Override
 	public ChannelPromise newPromise() {
 		return null;
 	}
 
 	@Override
-	public IGameChannelOutboundInvoker read() {
+	public IGameChannelPipeline read() {
 		tail.read();
 		return this;
 	}
-	  @Override
-	    public final Map<String, IGameChannelHandler> toMap() {
-	        Map<String, IGameChannelHandler> map = new LinkedHashMap<String, IGameChannelHandler>();
-	        AbstractGameChannelHandlerContext ctx = head.next;
-	        for (;;) {
-	            if (ctx == tail) {
-	                return map;
-	            }
-	            map.put(ctx.name(), ctx.handler());
-	            ctx = ctx.next;
-	        }
-	    }
+
+	@Override
+	public final Map<String, IGameChannelHandler> toMap() {
+		Map<String, IGameChannelHandler> map = new LinkedHashMap<String, IGameChannelHandler>();
+		AbstractGameChannelHandlerContext ctx = head.next;
+		for (;;) {
+			if (ctx == tail) {
+				return map;
+			}
+			map.put(ctx.name(), ctx.handler());
+			ctx = ctx.next;
+		}
+	}
+
 	@Override
 	public Iterator<Entry<String, IGameChannelHandler>> iterator() {
 		return toMap().entrySet().iterator();

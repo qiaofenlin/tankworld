@@ -12,5 +12,4 @@ public interface IGameChannelOutboundHandler extends IGameChannelHandler {
 
 	void write(IGameChannelHandlerContext ctx, IGameCommand msg, ChannelPromise promise) throws Exception;
 
-	void flush(IGameChannelHandlerContext ctx) throws Exception;
 }

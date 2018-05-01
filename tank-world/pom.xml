@@ -100,5 +100,6 @@
 
 	<modules>
 		<module>tank-world-game-server</module>
+		<module>xinyue-common</module>
 	</modules>
 </project>

@@ -62,9 +62,11 @@ public abstract class AbstractGameChannelHandlerContext implements IGameChannelH
 			}
 		}
 	}
+
 	final void setRemoved() {
-        handlerState = REMOVE_COMPLETE;
-    }
+		handlerState = REMOVE_COMPLETE;
+	}
+
 	final void setAddPending() {
 		boolean updated = HANDLER_STATE_UPDATER.compareAndSet(this, INIT, ADD_PENDING);
 		assert updated; // This should always be true as it MUST be called
@@ -84,7 +86,7 @@ public abstract class AbstractGameChannelHandlerContext implements IGameChannelH
 	@Override
 	public EventExecutor executor() {
 		if (executor == null) {
-			return channel().executor();
+			return channel().eventLoop();
 		} else {
 			return executor;
 		}
@@ -94,12 +96,14 @@ public abstract class AbstractGameChannelHandlerContext implements IGameChannelH
 	public String name() {
 		return name;
 	}
-	//TODO 这里以后会替换自定义的GameChannelPromise
+
+	// TODO 这里以后会替换自定义的GameChannelPromise
 	@Override
 	public ChannelPromise newPromise() {
-		//return new DefaultChannelPromise(channel(), executor);
+		// return new DefaultChannelPromise(channel(), executor);
 		return null;
 	}
+
 	private boolean invokeHandler() {
 		// Store in local variable to reduce volatile reads.
 		int handlerState = this.handlerState;
@@ -145,10 +149,7 @@ public abstract class AbstractGameChannelHandlerContext implements IGameChannelH
 			fireChannelActive();
 		}
 	}
-	
-	
-	
-	
+
 	@Override
 	public IGameChannelHandlerContext fireChannelInActive() {
 		invokeChannelInActive(findContextInbound());
@@ -180,10 +181,6 @@ public abstract class AbstractGameChannelHandlerContext implements IGameChannelH
 			fireChannelActive();
 		}
 	}
-	
-	
-	
-	
 
 	@Override
 	public IGameChannelHandlerContext fireReadEvent(final IGameEvent event) {
@@ -489,17 +486,8 @@ public abstract class AbstractGameChannelHandlerContext implements IGameChannelH
 	private void invokeWriteAndFlush(IGameCommand msg, ChannelPromise promise) {
 		if (invokeHandler()) {
 			invokeWrite0(msg, promise);
-			invokeFlush0();
 		} else {
 			writeCommand(msg, promise);
-		}
-	}
-
-	private void invokeFlush0() {
-		try {
-			((IGameChannelOutboundHandler) handler()).flush(this);
-		} catch (Throwable t) {
-			notifyHandlerException(t);
 		}
 	}
 
